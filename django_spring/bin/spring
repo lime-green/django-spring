@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+from django_spring.config import Config
+from django_spring.client import Client
+from django_spring.manager import Manager
+
+if len(sys.argv) <= 1:
+    sys.stderr.write("""usage:
+    spring start
+        runs the spring server
+
+    spring <command>
+        runs <command> similar to `manage.py <command>` but against the spring server
+""")
+    sys.exit(1)
+
+os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":" + os.getcwd()
+if sys.argv[1] == "start":
+    Manager(Config.MANAGER_SOCK_FILE).run()
+else:
+    Client(path=Config.MANAGER_SOCK_FILE).run(" ".join(sys.argv[1:]))
