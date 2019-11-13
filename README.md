@@ -14,6 +14,9 @@ spring start
 
 # Then run a manage.py command (eg. test)
 spring test --keepdb
+
+# Optionally, specify a settings module:
+DJANGO_SETTINGS_MODULE="base.settings" spring test --keepdb
 ```
 
 
