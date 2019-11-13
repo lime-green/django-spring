@@ -6,7 +6,7 @@ import sys
 import time
 import traceback
 
-from django_spring.app_setup import app_default_pre_command_hook, setup_django
+from django_spring.app_setup import setup_django
 from django_spring.utils.autoreload import python_reloader
 from django_spring.utils.logger import colour, get_logger
 from django_spring.utils.processes import pid_is_alive, sigterm_handler
