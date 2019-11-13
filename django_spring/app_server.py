@@ -78,9 +78,9 @@ class AppServer(object):
                 close([p2cw, c2pr])
         else:  # child process
             close([self.app_sock, self.client_sock, p2cw, c2pr])
-            sys.stdin = os.fdopen(p2cr, "rb", 0)
+            sys.stdin = os.fdopen(p2cr, "r", 1)
             if sys.version_info > (3, 0):
-                # Not really sure why it can't be unbuferred
+                # Not really sure why it can't be unbuffered
                 # But the other end of the pipe receives no data after a select
                 sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "w", 1))
             else:
