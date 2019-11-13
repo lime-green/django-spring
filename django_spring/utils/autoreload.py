@@ -24,7 +24,6 @@ def _run_django_stats_reloader():
 
     class StatReloaderWithQueuedRestart(StatReloader):
         def notify_file_changed(self, path):
-            print("got notify")
             self.stop()
 
     StatReloaderWithQueuedRestart().run_loop()
