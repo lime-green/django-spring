@@ -37,13 +37,14 @@ class AppServer(object):
                 self.app_sock.listen(1)
 
                 while not self.restart_queued.is_set():
-                    ins, _, _ = select.select([self.app_sock], [], [])
-                    self.client_sock, _ = ins[0].accept()
-                    with closing(self.client_sock):
-                        ins, _, _ = select.select([self.client_sock], [], [])
-                        data = read_json(ins[0])
-                        self.command_worker(data["command"])
-                    self.client_sock = None
+                    ins, _, _ = select.select([self.app_sock], [], [], 1)
+                    if ins:
+                        self.client_sock, _ = ins[0].accept()
+                        with closing(self.client_sock):
+                            ins, _, _ = select.select([self.client_sock], [], [])
+                            data = read_json(ins[0])
+                            self.command_worker(data["command"])
+                        self.client_sock = None
         except KeyboardInterrupt:
             pass
         finally:

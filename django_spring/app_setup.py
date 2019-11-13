@@ -34,7 +34,7 @@ def app_default_pre_command_hook():
 
 
 def setup_django():
-    os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
+    os.environ["DJANGO_SETTINGS_MODULE"] = Config.DJANGO_SETTINGS_MODULE
     try:
         app_default_pre_setup_hook()
         import django
