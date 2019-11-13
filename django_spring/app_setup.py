@@ -5,6 +5,11 @@ from django_spring.config import Config
 
 
 def app_default_pre_setup_hook():
+    disable_dd_tracing()
+    simplify_logging_handlers()
+
+
+def disable_dd_tracing():
     os.environ["DATADOG_TRACE_ENABLED"] = "false"
     try:
         from ddtrace import tracer
@@ -21,7 +26,7 @@ def app_default_pre_setup_hook():
         pass
 
 
-def app_default_pre_command_hook():
+def simplify_logging_handlers():
     import logging
 
     for handler in logging.getLogger().handlers:
@@ -30,7 +35,6 @@ def app_default_pre_command_hook():
             handler.formatter._fmt = "%(message)s"
         else:
             logging.getLogger().removeHandler(handler)
-    logging.disable(logging.INFO)
 
 
 def setup_django():

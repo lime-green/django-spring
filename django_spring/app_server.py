@@ -87,7 +87,6 @@ class AppServer(object):
             exit_code = 0
             try:
                 self.log(colour("running command `%s`" % cmd, "GREEN"), logging.WARN)
-                app_default_pre_command_hook()
                 try:
                     command_execute(cmd)
                 except SystemExit as e:
