@@ -79,7 +79,12 @@ class AppServer(object):
         else:  # child process
             close([self.app_sock, self.client_sock, p2cw, c2pr])
             sys.stdin = os.fdopen(p2cr, "rb", 0)
-            sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "wb", 0))
+            if sys.version_info > (3, 0):
+                # Not really sure why it can't be unbuferred
+                # But the other end of the pipe receives no data after a select
+                sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "w", 1))
+            else:
+                sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "wb", 0))
             # Some libraries write directly to file descriptors
             os.dup2(c2pw, 1)
             os.dup2(c2pw, 2)

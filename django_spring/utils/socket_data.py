@@ -39,8 +39,9 @@ def write_json(data, fd):
     if hasattr(fd, "fileno"):
         fd = fd.fileno()
     as_json = json.dumps(data)
-    os.write(fd, "%16s" % len(as_json))
-    os.write(fd, as_json)
+    len_s = "%16s" % len(as_json)
+    os.write(fd, len_s.encode())
+    os.write(fd, as_json.encode())
 
 
 def _get_read_fn(sock):
@@ -60,8 +61,8 @@ def read_json(sock):
     - n bytes for the JSON string
     """
     read_fn = _get_read_fn(sock)
-    data_len = int(read_fn(16).strip())
-    data = read_fn(data_len)
+    data_len = int(read_fn(16).decode().strip())
+    data = read_fn(data_len).decode()
     return json.loads(data)
 
 
