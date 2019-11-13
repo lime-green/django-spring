@@ -2,7 +2,7 @@
 
 ### Installing
 ```bash
-pip install git+git://github.com/lime-green/django-spring.git#egg=django-spring
+pip install git+git://github.com/lime-green/django-spring.git#egg=django-spring --upgrade
 ```
 
 
