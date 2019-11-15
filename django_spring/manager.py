@@ -32,11 +32,7 @@ class ClientThread(threading.Thread):
             msg = read_json(ins[0])
             app_env = msg["app_env"]
 
-            app_sock = connect(
-                self.app_servers[app_env],
-                wait_time=3,
-                max_attempts=10,
-            )
+            app_sock = connect(self.app_servers[app_env], wait_time=3, max_attempts=10)
             with closing(app_sock), closing(self.client_sock):
                 write_json(msg, app_sock)
                 redirect_map = {app_sock: self.client_sock, self.client_sock: app_sock}
@@ -124,8 +120,7 @@ class Manager(object):
                     if ins:
                         client_sock, _ = ins[0].accept()
                         ClientThread(
-                            app_servers=self.app_servers,
-                            client_sock=client_sock,
+                            app_servers=self.app_servers, client_sock=client_sock
                         ).start()
         except KeyboardInterrupt:
             pass

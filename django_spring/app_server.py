@@ -138,8 +138,6 @@ if __name__ == "__main__":
     restart_queued = Event()
     app_env = sys.argv[2]
     app_server = AppServer(
-        restart_queued=restart_queued,
-        path=sys.argv[1],
-        app_env=app_env,
+        restart_queued=restart_queued, path=sys.argv[1], app_env=app_env
     )
     python_reloader(app_server.run, restart_queued, app_env)
