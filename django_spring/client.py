@@ -13,9 +13,10 @@ from django_spring.utils.socket_data import (
 
 
 class Client(object):
-    def __init__(self, path):
+    def __init__(self, path, app_env):
         self.log = get_logger("[CLIENT]")
         self.path = path
+        self.app_env = app_env
 
     def run(self, cmd):
         # unbuffered STDIN
@@ -24,7 +25,7 @@ class Client(object):
 
         try:
             with closing(sock):
-                write_json({"command": cmd}, sock)
+                write_json({"command": cmd, "app_env": self.app_env}, sock)
                 redirect_map = {sock: sys.stdout, sys.stdin: sock}
                 read_sizes = {sys.stdin: 1}
                 while True:
@@ -35,8 +36,11 @@ class Client(object):
             pass
 
 
-if __name__ == "__main__":
-    if len(sys.argv) <= 1:
-        raise RuntimeError("Must give a command")
+def start_client():
+    app_env = "test" if sys.argv[1] == "test" else "dev"
+    client = Client(path=Config.MANAGER_SOCK_FILE, app_env=app_env)
+    client.run(" ".join(sys.argv[1:]))
 
-    Client(path=Config.MANAGER_SOCK_FILE).run(" ".join(sys.argv[1:]))
+
+if __name__ == "__main__":
+    start_client()

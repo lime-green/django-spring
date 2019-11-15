@@ -20,9 +20,9 @@ from django_spring.utils.socket_data import (
 
 
 class ClientThread(threading.Thread):
-    def __init__(self, app_server_path, client_sock):
+    def __init__(self, app_servers, client_sock):
         threading.Thread.__init__(self)
-        self.app_server_path, self.client_sock = app_server_path, client_sock
+        self.app_servers, self.client_sock = app_servers, client_sock
 
     def run(self):
         log = get_logger("[CLIENT_WORKER]")
@@ -30,8 +30,13 @@ class ClientThread(threading.Thread):
         ins, _, _ = select.select([self.client_sock], [], [])
         if ins:
             msg = read_json(ins[0])
+            app_env = msg["app_env"]
 
-            app_sock = connect(self.app_server_path, wait_time=5)
+            app_sock = connect(
+                self.app_servers[app_env],
+                wait_time=3,
+                max_attempts=10,
+            )
             with closing(app_sock), closing(self.client_sock):
                 write_json(msg, app_sock)
                 redirect_map = {app_sock: self.client_sock, self.client_sock: app_sock}
@@ -85,6 +90,7 @@ class Manager(object):
                 + ["-W%s" % o for o in sys.warnoptions]
                 + [app_server_path]
                 + [sock_file_path]
+                + [app_server_id]
             )
             new_environ = os.environ.copy()
             return subprocess.Popen(args, env=new_environ)
@@ -108,9 +114,8 @@ class Manager(object):
     def run(self):
         try:
             with bind(self.path) as manager_sock:
-                # just hardcode this for now, until multi-client support
-                app_server_id = 0
-                self._start_app_server(app_server_id)
+                self._start_app_server("test")
+                self._start_app_server("dev")
                 manager_sock.listen(1)
                 self.log("START LOOP", logging.WARN)
 
@@ -119,7 +124,7 @@ class Manager(object):
                     if ins:
                         client_sock, _ = ins[0].accept()
                         ClientThread(
-                            app_server_path=self.app_servers[app_server_id],
+                            app_servers=self.app_servers,
                             client_sock=client_sock,
                         ).start()
         except KeyboardInterrupt:
@@ -128,5 +133,9 @@ class Manager(object):
             self.log("STOP LOOP", logging.WARN)
 
 
-if __name__ == "__main__":
+def start_manager():
     Manager(Config.MANAGER_SOCK_FILE).run()
+
+
+if __name__ == "__main__":
+    start_manager()

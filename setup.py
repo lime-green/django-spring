@@ -35,7 +35,7 @@ setup(
     name="django-spring",
     classifiers=CLASSIFIERS,
     packages=find_packages(),
-    version="0.0.3",
+    version="0.0.4",
     description="Django App Preloader",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -21,18 +21,19 @@ from django_spring.utils.tty import FakeTTY
 
 
 class AppServer(object):
-    def __init__(self, restart_queued, path):
+    def __init__(self, restart_queued, path, app_env):
+        self.app_env = app_env
         self.app_sock = None
         self.client_sock = None
+        self.log = get_logger("[APP - %s]" % app_env)
         self.path = path
-        self.log = get_logger("[APP]")
         self.restart_queued = restart_queued
 
     def run(self):
         self.log("START", logging.WARN)
         try:
             with bind(self.path) as self.app_sock:
-                setup_django()
+                setup_django(self.app_env)
                 self.log("READY", logging.WARN)
                 self.app_sock.listen(1)
 
@@ -135,5 +136,10 @@ if __name__ == "__main__":
     from threading import Event
 
     restart_queued = Event()
-    app_server = AppServer(restart_queued=restart_queued, path=sys.argv[1])
-    python_reloader(app_server.run, restart_queued, args=[], kwargs={})
+    app_env = sys.argv[2]
+    app_server = AppServer(
+        restart_queued=restart_queued,
+        path=sys.argv[1],
+        app_env=app_env,
+    )
+    python_reloader(app_server.run, restart_queued, app_env)

@@ -1,5 +1,7 @@
 import os
+import sys
 import traceback
+from contextlib import contextmanager
 
 from django_spring.config import Config
 
@@ -37,17 +39,27 @@ def simplify_logging_handlers():
             logging.getLogger().removeHandler(handler)
 
 
-def setup_django():
+@contextmanager
+def wrap_env(app_env):
+    """
+    If app_env is "test" then make django load the test settings file
+    """
+    if app_env == "test":
+        argv = sys.argv[:]
+        sys.argv.append("test")
+    yield
+    if app_env == "test":
+        sys.argv = argv
+
+
+def setup_django(app_env):
     os.environ["DJANGO_SETTINGS_MODULE"] = Config.DJANGO_SETTINGS_MODULE
     try:
         app_default_pre_setup_hook()
         import django
-        import sys
 
-        argv = sys.argv[:]
-        sys.argv.append("test")
-        django.setup(set_prefix=False)
-        sys.argv = argv
+        with wrap_env(app_env):
+            django.setup(set_prefix=False)
     except:
         traceback.print_exc()
         sys.exit(Config.RESTART_EXIT_CODE)
