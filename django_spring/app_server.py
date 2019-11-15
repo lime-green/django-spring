@@ -127,8 +127,8 @@ class AppServer(object):
 def command_execute(cmd):
     from django.core import management
 
-    argv = ["manage.py"] + cmd.split(" ")
-    return management.ManagementUtility().fetch_command(argv[1]).run_from_argv(argv)
+    sys.argv = ["spring"] + cmd.split(" ")
+    return management.ManagementUtility(sys.argv).execute()
 
 
 if __name__ == "__main__":
