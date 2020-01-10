@@ -23,7 +23,12 @@ def closing(sock):
     try:
         yield
     finally:
-        sock.shutdown(2)
+        try:
+            # macOS seems to disconnect the socket
+            # before this point, so will error out
+            sock.shutdown(2)
+        except:
+            pass
         sock.close()
 
 
