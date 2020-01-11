@@ -49,12 +49,13 @@ class Manager(object):
         self.app_servers = multiprocessing.Manager().dict()
         self.path = path
         self.log = get_logger("[MANAGER]")
+        self.quit_event = multiprocessing.Event()
 
     def _start_app_server(self, app_server_id):
         path = Config.APP_SOCK_FILE.format(app_server_id)
-        multiprocessing.Process(target=self._watch, args=[app_server_id, path]).start()
+        multiprocessing.Process(target=self._watch, args=[app_server_id, path, self.quit_event]).start()
 
-    def _watch(self, app_server_id, sock_file_path):
+    def _watch(self, app_server_id, sock_file_path, quit_event):
         import subprocess
 
         def _exit_child(process):
@@ -93,7 +94,7 @@ class Manager(object):
 
         p = None
         try:
-            while True:
+            while not quit_event.is_set():
                 if p:
                     p, err = _poll_child(p)
                     if err:
@@ -126,6 +127,7 @@ class Manager(object):
             pass
         finally:
             self.log("STOP LOOP", logging.WARN)
+            self.quit_event.set()
 
 
 def start_manager():
