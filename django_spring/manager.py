@@ -124,7 +124,11 @@ class Manager(object):
                             app_servers=self.app_servers, client_sock=client_sock
                         ).start()
         except KeyboardInterrupt:
+            self.log("KEYBOARD INT", logging.WARN)
             pass
+        except:
+            import traceback
+            self.log(traceback.format_exc(), logging.WARN)
         finally:
             self.log("STOP LOOP", logging.WARN)
             self.quit_event.set()

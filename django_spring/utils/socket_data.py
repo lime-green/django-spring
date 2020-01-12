@@ -107,7 +107,7 @@ def connect(path, max_attempts=5, wait_time=0.2):
         try:
             sock.connect(path)
             return sock
-        except socket.error:
+        except:
             if i == max_attempts - 1:
                 raise
             time.sleep(wait_time)
