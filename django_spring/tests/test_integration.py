@@ -16,7 +16,7 @@ def spring_daemon(folder_name):
     os.chdir(os.path.join(THIS_DIR, folder_name))
     env = os.environ.copy()
     env["DJANGO_SETTINGS_MODULE"] = "{}.settings".format(folder_name)
-    p = subprocess.Popen(["spring start"], env=env, shell=True)
+    p = subprocess.Popen(["spring", "start"], env=env, shell=True)
     try:
         yield p
     finally:
