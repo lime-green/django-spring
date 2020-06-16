@@ -1,6 +1,9 @@
 import logging
 
-LOG_LEVEL = logging.WARN
+from django_spring.config import Config
+
+
+LOG_LEVEL = getattr(logging, Config.LOG_LEVEL)
 TERM_COLORS = {
     "RESET": "\x1b[0m",
     "RED": "\x1b[1;31m",

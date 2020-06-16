@@ -4,15 +4,23 @@ from contextlib import contextmanager
 
 
 @contextmanager
-def sigterm_handler(sig=signal.SIGTERM):
-    original_handler = signal.getsignal(sig)
+def signal_handler(*signals):
+    if not signals:
+        signals = [signal.SIGTERM]
+    original_signals = dict()
 
-    def _sigterm_handler(_sig, _frame):
-        _sigterm_handler.handled = True
+    def _signal_handler(sig, _frame):
+        _signal_handler.handled = sig
 
-    _sigterm_handler.handled = False
-    yield _sigterm_handler
-    signal.signal(sig, original_handler)
+    for s in signals:
+        original_signals[s] = signal.getsignal(s)
+        signal.signal(s, _signal_handler)
+
+    _signal_handler.handled = None
+    yield _signal_handler
+
+    for s, handler in original_signals.items():
+        signal.signal(s, handler)
 
 
 def pid_is_alive(pid):

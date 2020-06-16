@@ -43,8 +43,11 @@ def _run_reloader(restart_queued):
 
 
 def reloader_thread(restart_queued, app_env):
-    setup_django(app_env)
-    _run_reloader(restart_queued)
+    try:
+        setup_django(app_env)
+        _run_reloader(restart_queued)
+    except KeyboardInterrupt:
+        pass
 
 
 def python_reloader(main_func, restart_queued, app_env, *args, **kwargs):

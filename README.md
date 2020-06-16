@@ -54,3 +54,14 @@ real    0m14.457s
 user    0m0.180s
 sys     0m0.100s
 ```
+
+
+### Tweakable env vars
+
+`DJANGO_SETTINGS_MODULE`: The path to your settings module  (eg. `base.settings`)
+
+`CODE_RELOADER_POLL_PERIOD`: The number of seconds to wait between polling
+when using the old Django<2.2 reloader. Setting this higher will improve
+performance when using older Django versions.
+
+`LOG_LEVEL`: (DEBUG, INFO, WARN, ERROR, CRITICAL)
