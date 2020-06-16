@@ -67,12 +67,9 @@ class AppServer(object):
 
     def _command_worker_target(self, cmd, p2cr, c2pw):
         sys.stdin = os.fdopen(p2cr, "r", 1)
-        if sys.version_info > (3, 0):
-            # Not really sure why it can't be unbuffered
-            # But the other end of the pipe receives no data after a select
-            sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "w", 1))
-        else:
-            sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "wb", 0))
+        # Not really sure why it can't be unbuffered
+        # But the other end of the pipe receives no data after a select
+        sys.stdout = sys.stderr = FakeTTY(os.fdopen(c2pw, "w", 1))
         # Some libraries write directly to file descriptors
         os.dup2(c2pw, 1)
         os.dup2(c2pw, 2)
