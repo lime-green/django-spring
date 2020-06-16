@@ -60,8 +60,7 @@ sys     0m0.100s
 
 `DJANGO_SETTINGS_MODULE`: The path to your settings module  (eg. `base.settings`)
 
-`CODE_RELOADER_POLL_PERIOD`: The number of seconds to wait between polling
-when using the old Django<2.2 reloader. Setting this higher will improve
-performance when using older Django versions.
+`CODE_RELOADER_POLL_PERIOD`: The number of seconds to wait between polling.
+Setting this higher will improve performance when using the stat reloader.
 
 `LOG_LEVEL`: (DEBUG, INFO, WARN, ERROR, CRITICAL)

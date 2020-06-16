@@ -5,7 +5,7 @@ import sys
 import uuid
 
 from django_spring.config import Config
-from django_spring.utils.logger import get_logger
+from django_spring.utils.logger import get_logger, TERM_COLORS
 from django_spring.utils.socket_data import (
     closing,
     connect,
@@ -71,7 +71,14 @@ def start_client():
         ctl_path=Config.MANAGER_CTL_SOCK_FILE,
         app_env=app_env,
     )
-    client.run(" ".join(sys.argv[1:]))
+    try:
+        client.run(" ".join(sys.argv[1:]))
+    except ConnectionRefusedError:
+        print(
+            "{}Can't connect to the spring server, please run: `spring start`{}".format(
+                TERM_COLORS["YELLOW"], TERM_COLORS["RESET"]
+            )
+        )
 
 
 if __name__ == "__main__":
